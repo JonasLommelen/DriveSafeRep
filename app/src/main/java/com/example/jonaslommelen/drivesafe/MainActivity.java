@@ -10,8 +10,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.example.jonaslommelen.drivesafe.utilities.JsonUtils;
 import com.example.jonaslommelen.drivesafe.utilities.URLBuilder;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.net.URL;
 
 public class MainActivity extends AppCompatActivity {
@@ -57,9 +62,21 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void makeBreweryDBSearchQuery(){
+    private void makeBreweryDBSearchQuery() {
         String githubSearchQuery = mSearchBoxEditText.getText().toString();
         URL githubSearchURL = URLBuilder.buildUrl(githubSearchQuery);
-        mDisplayUrl.setText(githubSearchURL.toString());
+        String beerJsonStr = null;
+        try {
+            beerJsonStr = URLBuilder.getResponseFromHttpUrl(githubSearchURL);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            String response[] = JsonUtils.getBeerStringsFromJson(this, beerJsonStr);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
     }
 }

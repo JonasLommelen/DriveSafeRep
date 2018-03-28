@@ -68,7 +68,6 @@ public class JsonUtils {
 
             parsedBeerData[i] = name + percentage + labelPng;
         }
-
         return parsedBeerData;
 
     }
