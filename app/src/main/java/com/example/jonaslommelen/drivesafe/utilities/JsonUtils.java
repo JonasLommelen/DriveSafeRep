@@ -55,7 +55,7 @@ public class JsonUtils {
             for (int i = 0; i < beerArray.length(); i++) {
 
                 JSONObject beerJson = beerArray.getJSONObject(i);
-                JSONObject labelJson = beerJson.getJSONObject(BDB_LABEL);
+                //JSONObject labelJson = beerJson.getJSONObject(BDB_LABEL);
 
                 String name = beerJson.getString(BDB_NAME);
                 //String percentage = beerJson.getString(BDB_PERCENTAGE);
@@ -64,7 +64,7 @@ public class JsonUtils {
                 //    labelPng = labelJson.getString(BDB_LABEL_ICON);
                 //}
 
-                parsedBeerData[i] = name;// + "-" + percentage;// + "-" + labelPng;
+                parsedBeerData[i] = name; // + "-" + percentage;// + "-" + labelPng;
             }
             return parsedBeerData;
         }

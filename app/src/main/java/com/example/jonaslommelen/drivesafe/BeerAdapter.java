@@ -8,10 +8,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-public class BeerAdapter extends RecyclerView.Adapter<BeerAdapter.NumberViewHolder> {
+public class BeerAdapter extends RecyclerView.Adapter<BeerAdapter.BeerViewHolder> {
     private static final String TAG = BeerAdapter.class.getSimpleName();
 
     private int mNumberItems;
+    private static int viewHolderCount;
     final private ListItemClickListener mOnClickListener;
 
     public interface ListItemClickListener {
@@ -21,23 +22,28 @@ public class BeerAdapter extends RecyclerView.Adapter<BeerAdapter.NumberViewHold
     public BeerAdapter(int numberOfItems, ListItemClickListener listener) {
         mNumberItems = numberOfItems;
         mOnClickListener = listener;
+        viewHolderCount = 0;
     }
 
     @Override
-    public NumberViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+    public BeerViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         Context context = viewGroup.getContext();
         int layoutIdForListItem = R.layout.number_list_item;
         LayoutInflater inflater = LayoutInflater.from(context);
         boolean shouldAttachToParentImmediately = false;
 
         View view = inflater.inflate(layoutIdForListItem, viewGroup, shouldAttachToParentImmediately);
-        NumberViewHolder viewHolder = new NumberViewHolder(view);
-
+        BeerViewHolder viewHolder = new BeerViewHolder(view);
+        viewHolder.viewHolderIndex.setText("ViewHolder index: " + viewHolderCount);
+        viewHolderCount++;
+        Log.d(TAG, "onCreateViewHolder: number of ViewHolders created: "
+                + viewHolderCount);
         return viewHolder;
+
     }
 
     @Override
-    public void onBindViewHolder(NumberViewHolder holder, int position) {
+    public void onBindViewHolder(BeerViewHolder holder, int position) {
         Log.d(TAG, "#" + position);
         holder.bind(position);
     }
@@ -47,18 +53,27 @@ public class BeerAdapter extends RecyclerView.Adapter<BeerAdapter.NumberViewHold
         return mNumberItems;
     }
 
-    class NumberViewHolder extends RecyclerView.ViewHolder {
+    class BeerViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         TextView listItemNumberView;
+        TextView viewHolderIndex;
 
-        public NumberViewHolder(View itemView) {
+        public BeerViewHolder(View itemView) {
             super(itemView);
-            listItemNumberView = (TextView) itemView.findViewById(R.id.tv_item_number);
+            listItemNumberView = (TextView) itemView.findViewById(R.id.tv_item_name);
+            viewHolderIndex = (TextView) itemView.findViewById(R.id.tv_item_volume);
+            itemView.setOnClickListener(this);
         }
 
 
         void bind(int listIndex) {
             listItemNumberView.setText(String.valueOf(listIndex));
+        }
+
+        @Override
+        public void onClick(View v) {
+            int clickedPosition = getAdapterPosition();
+            mOnClickListener.onListItemClick(clickedPosition);
         }
     }
 }

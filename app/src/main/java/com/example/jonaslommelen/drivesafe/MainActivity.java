@@ -36,7 +36,6 @@ public class MainActivity extends AppCompatActivity implements BeerAdapter.ListI
     private static final int NUM_LIST_ITEMS = 100;
     private BeerAdapter mAdapter;
     private RecyclerView mBeersList;
-    private Toast mToast;
     private ProgressBar mLoadingIndicator;
     private static final int BREWERYDB_SEARCH_LOADER = 22;
     private static final String SEARCH_QUERY_URL_EXTRA = "query";
@@ -84,14 +83,15 @@ public class MainActivity extends AppCompatActivity implements BeerAdapter.ListI
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int selectedMenuOption = item.getItemId();
-        if(selectedMenuOption == R.id.action_search){
-            makeBreweryDBSearchQuery();
-        }
-        else if (selectedMenuOption == R.id.action_settings){
-            Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
-            String string = mSearchBoxEditText.getText().toString();
-            intent.putExtra(Intent.EXTRA_TEXT, string);
-            startActivity(intent);
+        switch (selectedMenuOption) {
+            case R.id.action_search:
+                makeBreweryDBSearchQuery();
+
+            case R.id.action_settings:
+                Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+                String string = mSearchBoxEditText.getText().toString();
+                intent.putExtra(Intent.EXTRA_TEXT, string);
+                startActivity(intent);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -121,12 +121,10 @@ public class MainActivity extends AppCompatActivity implements BeerAdapter.ListI
 
     @Override
     public void onListItemClick(int clickedItemIndex) {
-        if (mToast != null) {
-            mToast.cancel();
-        }
-        String toastMessage = "Item #" + clickedItemIndex + " clicked.";
-        mToast = Toast.makeText(this, toastMessage, Toast.LENGTH_LONG);
-        mToast.show();
+        Intent intent = new Intent(MainActivity.this, DetailActivity.class);
+        int number = mAdapter.getItemCount();
+        intent.putExtra(Intent.EXTRA_TEXT, number);
+        startActivity(intent);
     }
 
     @Override
