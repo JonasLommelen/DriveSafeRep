@@ -1,6 +1,7 @@
 package com.example.jonaslommelen.drivesafe.utilities;
 
 import android.net.Uri;
+import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,10 +15,11 @@ import java.util.Scanner;
  */
 
 public class URLBuilder {
-
+    
     // base URL of version 2 of the BreweryDB API
-    private final static String BREWERYDB_BASE_URL = "http://api.brewerydb.com/v2/";
+    private final static String BREWERYDB_BASE_URL = "http://api.brewerydb.com/v2";
 
+    private final static String SEARCH_PARAM = "search";
     private final static String QUERY_PARAM = "q";
     private final static String KEY_PARAM = "key";
 
@@ -26,7 +28,7 @@ public class URLBuilder {
 
     public static URL buildUrl(String beerQuery){
         Uri builtUri = Uri.parse(BREWERYDB_BASE_URL).buildUpon()
-                .appendPath("search")
+                .appendPath(SEARCH_PARAM)
                 .appendQueryParameter(QUERY_PARAM, beerQuery)
                 .appendQueryParameter(KEY_PARAM, key)
                 .build();
