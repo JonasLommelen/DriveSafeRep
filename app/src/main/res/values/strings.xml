@@ -16,12 +16,19 @@
 
     <!-- Strings related to Preferences -->
     <string name="pref_language_label">Language</string>
-    <string name="pref_language_english" translatable="false">English</string>
-    <string name="pref_language_dutch" translatable="false">Nederlands</string>
+    <string name="pref_language_english" translatable="false">english</string>
+    <string name="pref_language_label_english">English</string>
+    <string name="pref_language_dutch" translatable="false">nederlands</string>
+    <string name="pref_language_label_dutch">Nederlands</string>
+    <string name="pref_language_key" translatable="false">language</string>
 
     <string name="pref_units_label">Alcohol Percentage Units</string>
+    <string name="pref_units_default" translatable="false">abv</string>
     <string name="pref_units_abv" translatable="false">abv</string>
-    <string name="pref_units_percentage" translatable="false">%</string>
+    <string name="pref_units_label_abv" translatable="false">ABV</string>
+    <string name="pref_units_percentage" translatable="false">percentage</string>
+    <string name="pref_units_label_percentage" translatable="false">percentage</string>
+    <string name="pref_units_key" translatable="false">units</string>
 
     <!-- Example General settings -->
     <string name="pref_header_general">General</string>

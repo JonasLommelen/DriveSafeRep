@@ -13,26 +13,11 @@
         android:layout_height="wrap_content"
         android:hint="@string/et_hint" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <Button
+        android:id="@+id/make_url"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@+id/et_search_box">
-
-        <Button
-            android:id="@+id/make_url"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/search" />
-
-        <ProgressBar
-            android:id="@+id/pb_loading_indicator"
-            android:layout_width="42dp"
-            android:layout_height="42dp"
-            android:layout_gravity="center"
-            android:visibility="invisible" />
-
-    </LinearLayout>
+        android:text="@string/search" />
 
     <TextView
         android:id="@+id/tv_error_message_display"
@@ -40,11 +25,20 @@
         android:layout_height="wrap_content"
         android:text="@string/error_message"
         android:visibility="invisible"/>
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/rv_beers"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-    </android.support.v7.widget.RecyclerView>
+        android:layout_height="match_parent">
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_beers"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        </android.support.v7.widget.RecyclerView>
+        <ProgressBar
+            android:id="@+id/pb_loading_indicator"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:layout_gravity="center"
+            android:visibility="invisible" />
+    </FrameLayout>
 
 </LinearLayout>

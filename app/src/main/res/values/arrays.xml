@@ -1,4 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string-array name="pref_units_options">
+        <item>@string/pref_units_label_abv</item>
+        <item>@string/pref_units_label_percentage</item>
+    </string-array>
 
+    <string-array name="pref_units_values">
+        <item>@string/pref_units_abv</item>
+        <item>@string/pref_units_percentage</item>
+    </string-array>
+
+    <string-array name="pref_language_options">
+        <item>@string/pref_language_label_english</item>
+        <item>@string/pref_language_label_dutch</item>
+    </string-array>
+
+    <string-array name="pref_language_values">
+        <item>@string/pref_language_english</item>
+        <item>@string/pref_language_dutch</item>
+    </string-array>
 </resources>
