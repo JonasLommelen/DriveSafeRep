@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,7 +18,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.util.Log;
 
 import com.example.jonaslommelen.drivesafe.Utilities.NetworkUtils;
 
@@ -28,27 +28,38 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.net.URL;
 
-public class MainActivity extends AppCompatActivity {// implements BeerAdapter.ListItemClickListener, LoaderManager.LoaderCallbacks<String> {
-    private static final String TAG = MainActivity.class.getSimpleName();
+public class AddBeerActivity extends AppCompatActivity implements BeerAdapter.ListItemClickListener, LoaderManager.LoaderCallbacks<String> {
 
+    private final static String TAG = AddBeerActivity.class.getSimpleName();
+    private EditText mSearchBoxEditText;
+    private TextView mErrorMessageDisplay;
+    private Button mSearchButton;
+    private BeerAdapter mAdapter;
     private RecyclerView mBeersList;
-    private Button mAddBeerButton;
+    private Cursor mCursor;
+    private ProgressBar mLoadingIndicator;
+
+    private static final int BREWERYDB_SEARCH_LOADER = 27;
+    private static final String SEARCH_QUERY_URL_EXTRA = "query";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        mAddBeerButton = (Button) findViewById(R.id.add_beer_button);
+        setContentView(R.layout.activity_add_beer);
+        mSearchBoxEditText = (EditText) findViewById(R.id.et_search_box);
+        mErrorMessageDisplay = (TextView) findViewById(R.id.tv_error_message_display);
+        mSearchButton = (Button) findViewById(R.id.make_url);
+        mLoadingIndicator = (ProgressBar) findViewById(R.id.pb_loading_indicator);
 
-        mAddBeerButton.setOnClickListener(new View.OnClickListener() {
+        mLoadingIndicator.setVisibility(View.INVISIBLE);
+
+        mSearchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent startAddBeerActivity = new Intent(MainActivity.this, AddBeerActivity.class);
-                startActivity(startAddBeerActivity);
-                return;
+                makeBreweryDBSearchQuery();
             }
         });
-        /*
+
         if (savedInstanceState != null) {
             String searchItem = savedInstanceState.getString(SEARCH_QUERY_URL_EXTRA);
             mSearchBoxEditText.setText(searchItem);
@@ -57,9 +68,8 @@ public class MainActivity extends AppCompatActivity {// implements BeerAdapter.L
 
         getSupportLoaderManager().initLoader(BREWERYDB_SEARCH_LOADER, null, this);
         logAndAppend("onCreate");
-        */
     }
-    /*
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -96,9 +106,13 @@ public class MainActivity extends AppCompatActivity {// implements BeerAdapter.L
         logAndAppend("onDestroy");
     }
 
+    private void logAndAppend(String lifecycleEvent) {
+        Log.d(TAG, "Lifecycle Event: " + lifecycleEvent);
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main, menu);
+        getMenuInflater().inflate(R.menu.add_beer, menu);
         return true;
     }
 
@@ -121,7 +135,7 @@ public class MainActivity extends AppCompatActivity {// implements BeerAdapter.L
 
         String breweryDBSearchQuery = mSearchBoxEditText.getText().toString();
         if (TextUtils.isEmpty(breweryDBSearchQuery)) {
-            mSearchBoxEditText.setText(R.string.nothing_entered);
+            mSearchBoxEditText.setHint(R.string.nothing_entered);
             return;
         }
 
@@ -141,14 +155,18 @@ public class MainActivity extends AppCompatActivity {// implements BeerAdapter.L
 
     @Override
     public void onListItemClick(int position) {
-        Intent intent = new Intent(MainActivity.this, DetailActivity.class);
+        Intent intent = new Intent(AddBeerActivity.this, DetailActivity.class);
         mCursor.moveToPosition(position);
         String name = mCursor.getString(mCursor.getColumnIndex("name"));
         intent.putExtra("name", name);
-        String description = mCursor.getString(mCursor.getColumnIndex("description"));
-        intent.putExtra("description", description);
         String abv = mCursor.getString(mCursor.getColumnIndex("abv"));
         intent.putExtra("abv", abv);
+        if(mCursor.getColumnIndex("description") != -1){
+            String description = mCursor.getString(mCursor.getColumnIndex("description"));
+            intent.putExtra("description", description);
+        } else{
+            intent.putExtra("description", R.string.no_description);
+        }
         startActivity(intent);
     }
 
@@ -245,16 +263,11 @@ public class MainActivity extends AppCompatActivity {// implements BeerAdapter.L
 
     private void showBeerDataView() {
         mErrorMessageDisplay.setVisibility(View.INVISIBLE);
-        mSearchResultsTextView.setVisibility(View.VISIBLE);
+        mBeersList.setVisibility(View.VISIBLE);
     }
 
     private void showErrorMessage() {
-        mSearchResultsTextView.setVisibility(View.INVISIBLE);
+        mBeersList.setVisibility(View.INVISIBLE);
         mErrorMessageDisplay.setVisibility(View.VISIBLE);
     }
-
-    private void logAndAppend(String lifecycleEvent) {
-        Log.d(TAG, "Lifecycle Event: " + lifecycleEvent);
-    }
-    */
 }

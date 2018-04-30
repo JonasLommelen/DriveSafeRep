@@ -1,79 +1,82 @@
 package com.example.jonaslommelen.drivesafe;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class BeerAdapter extends RecyclerView.Adapter<BeerAdapter.BeerViewHolder> {
     private static final String TAG = BeerAdapter.class.getSimpleName();
 
-    private int mNumberItems;
-    private static int viewHolderCount;
-    final private ListItemClickListener mOnClickListener;
+    private Context mContext;
+    private Cursor mCursor;
+    private ListItemClickListener mListItemClickListener;
 
-    public interface ListItemClickListener {
-        void onListItemClick(int clickedItemIndex);
+    public BeerAdapter(Context context, Cursor cursor, ListItemClickListener listener) {
+        mContext = context;
+        mCursor = cursor;
+        mListItemClickListener = listener;
     }
 
-    public BeerAdapter(int numberOfItems, ListItemClickListener listener) {
-        mNumberItems = numberOfItems;
-        mOnClickListener = listener;
-        viewHolderCount = 0;
+    public interface ListItemClickListener {
+        void onListItemClick(int position);
     }
 
     @Override
     public BeerViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-        Context context = viewGroup.getContext();
-        int layoutIdForListItem = R.layout.number_list_item;
-        LayoutInflater inflater = LayoutInflater.from(context);
-        boolean shouldAttachToParentImmediately = false;
-
-        View view = inflater.inflate(layoutIdForListItem, viewGroup, shouldAttachToParentImmediately);
-        BeerViewHolder viewHolder = new BeerViewHolder(view);
-        viewHolder.viewHolderIndex.setText("ViewHolder index: " + viewHolderCount);
-        viewHolderCount++;
-        Log.d(TAG, "onCreateViewHolder: number of ViewHolders created: "
-                + viewHolderCount);
-        return viewHolder;
-
+        int layoutIdForListItem = R.layout.beer_list_item;
+        LayoutInflater inflater = LayoutInflater.from(mContext);
+        View view = inflater.inflate(layoutIdForListItem, viewGroup, false);
+        return new BeerViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(BeerViewHolder holder, int position) {
-        Log.d(TAG, "#" + position);
-        holder.bind(position);
+        if (!mCursor.moveToPosition(position)) return;
+
+        String name = mCursor.getString(mCursor.getColumnIndex("name"));
+
+        holder.mNameTextView.setText(name);
+        holder.itemView.setTag(mCursor.getString(mCursor.getColumnIndex("id")));
+
     }
 
     @Override
     public int getItemCount() {
-        return mNumberItems;
+        if(mCursor == null){
+            return 0;
+        }
+        return mCursor.getCount();
     }
 
-    class BeerViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public void swapCursor(Cursor newCursor) {
+        if (mCursor != null) mCursor.close();
+        mCursor = newCursor;
+        if (newCursor != null) {
+            this.notifyDataSetChanged();
+        }
+    }
 
-        TextView listItemNumberView;
-        TextView viewHolderIndex;
+    public class BeerViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        TextView mNameTextView;
 
         public BeerViewHolder(View itemView) {
             super(itemView);
-            listItemNumberView = (TextView) itemView.findViewById(R.id.tv_item_name);
-            viewHolderIndex = (TextView) itemView.findViewById(R.id.tv_item_volume);
+            mNameTextView = (TextView) itemView.findViewById(R.id.tv_item_name);
             itemView.setOnClickListener(this);
         }
 
 
-        void bind(int listIndex) {
-            listItemNumberView.setText(String.valueOf(listIndex));
-        }
-
         @Override
         public void onClick(View v) {
             int clickedPosition = getAdapterPosition();
-            mOnClickListener.onListItemClick(clickedPosition);
+            mListItemClickListener.onListItemClick(clickedPosition);
         }
+
     }
 }

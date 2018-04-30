@@ -1,12 +1,10 @@
-package com.example.jonaslommelen.drivesafe.utilities;
+package com.example.jonaslommelen.drivesafe.Utilities;
 
 import android.content.Context;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.net.HttpURLConnection;
 
 /**
  * Created by Jonas Lommelen on 21/03/2018.
@@ -22,7 +20,7 @@ public class JsonUtils {
 
         final String BDB_ID = "id";
         final String BDB_NAME = "name";
-        final String BDB_NAMEDISPLAY = "nameDisplay";
+        final String BDB_DESCRIPTION = "description";
 
         final String BDB_PERCENTAGE = "abv";
         //final String BDB_BITTERNESS = "ibu";
@@ -32,7 +30,7 @@ public class JsonUtils {
         //final String BDB_LABEL_MEDIUM = "medium";
         //final String BDB_LABEL_LARGE = "large";
 
-        String[] parsedBeerData = null;
+        String[] parsedBeerData;
 
         JSONObject beerObject = new JSONObject(beerJsonStr);
 
@@ -44,27 +42,32 @@ public class JsonUtils {
             return parsedBeerData;
         }
         else if(!beerObject.has(BDB_TOTAL_RESULTS)){
-            return null;
+            String message = "@string/no_results_message";
+            parsedBeerData = new String[1];
+            parsedBeerData[0] = message;
+            return parsedBeerData;
         }
         else {
 
             JSONArray beerArray = beerObject.getJSONArray(BDB_DATA);
 
-            parsedBeerData = new String[beerArray.length()];
+            parsedBeerData = new String[beerArray.length()*2];
+
 
             for (int i = 0; i < beerArray.length(); i++) {
-
                 JSONObject beerJson = beerArray.getJSONObject(i);
-                //JSONObject labelJson = beerJson.getJSONObject(BDB_LABEL);
 
                 String name = beerJson.getString(BDB_NAME);
-                //String percentage = beerJson.getString(BDB_PERCENTAGE);
-                //String labelPng = null;
-                //if (labelJson != null) {
-                //    labelPng = labelJson.getString(BDB_LABEL_ICON);
-                //}
+                String percentage = beerJson.getString(BDB_PERCENTAGE);
+                String id = beerJson.getString(BDB_ID);
 
-                parsedBeerData[i] = name; // + "-" + percentage;// + "-" + labelPng;
+                String description = "No description available.";
+                if(beerJson.getString(BDB_DESCRIPTION) != null) {
+                    description = beerJson.getString(BDB_DESCRIPTION);
+                }
+
+                parsedBeerData[2*i] = name + " - " + "percentage: " + percentage;
+                parsedBeerData[2*i+1] = id;
             }
             return parsedBeerData;
         }
