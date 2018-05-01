@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.provider.BaseColumns;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -53,6 +54,8 @@ public class MainActivity extends AppCompatActivity implements MainBeerAdapter.L
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        PreferenceManager.getDefaultSharedPreferences(this)
+                .registerOnSharedPreferenceChangeListener(this);
         mAddBeerButton = (Button) findViewById(R.id.add_beer_button);
         mBloodAlcoholTV = (TextView) findViewById(R.id.blood_alcohol_tv);
         mHoursUntilSafeTV = (TextView) findViewById(R.id.hours_until_safe_tv);
@@ -80,8 +83,8 @@ public class MainActivity extends AppCompatActivity implements MainBeerAdapter.L
         mHeight = Integer.parseInt(DriveSafePreferences.getHeight(this));
         mIsMale = DriveSafePreferences.isMale(this);
 
-        mBloodAlcohol = 1.4;
-        mHoursUntilSafe = 5.3;
+        mBloodAlcohol = 0;
+        mHoursUntilSafe = 0;
         calculateBloodAlcohol();
         calculateHoursUntilDrivingSafe();
 
@@ -202,7 +205,7 @@ public class MainActivity extends AppCompatActivity implements MainBeerAdapter.L
 
     private void calculateHoursUntilDrivingSafe(){
         double NDP = 10d; //n decimal places
-        double HUS = mBloodAlcohol/mWeight/0.002;
+        double HUS = mBloodAlcohol/mWeight/0.002/2;
         Log.d(TAG, "calculateHoursUntilDrivingSafe: HUS: " + HUS);
         mHoursUntilSafe = Math.round(HUS*NDP)/NDP;
         String hoursUntilSafeString = "Hours until you can drive again: "+mHoursUntilSafe;
@@ -273,6 +276,8 @@ public class MainActivity extends AppCompatActivity implements MainBeerAdapter.L
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        PreferenceManager.getDefaultSharedPreferences(this)
+                .unregisterOnSharedPreferenceChangeListener(this);
         logAndAppend("onDestroy");
     }
 
