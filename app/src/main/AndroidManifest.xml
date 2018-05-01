@@ -6,9 +6,9 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/beer_icon"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/beer_icon"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
@@ -30,10 +30,12 @@
         </activity>
         <activity
             android:name=".DetailActivity"
+            android:launchMode="singleTop"
             android:label="@string/title_detail_activity"
-            android:parentActivityName=".MainActivity"/>
+            android:parentActivityName=".AddBeerActivity"/>
         <activity
             android:name=".AddBeerActivity"
+            android:launchMode="singleTop"
             android:label="@string/title_add_beer_activity"
             android:parentActivityName=".MainActivity" />
     </application>

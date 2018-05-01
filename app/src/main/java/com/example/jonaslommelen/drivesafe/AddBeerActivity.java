@@ -1,7 +1,9 @@
 package com.example.jonaslommelen.drivesafe;
 
+import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
@@ -19,6 +21,8 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.example.jonaslommelen.drivesafe.Data.BeerListContract;
+import com.example.jonaslommelen.drivesafe.Data.BeerListDBHelper;
 import com.example.jonaslommelen.drivesafe.Utilities.NetworkUtils;
 
 import org.json.JSONArray;
@@ -27,31 +31,37 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.Timestamp;
 
-public class AddBeerActivity extends AppCompatActivity implements BeerAdapter.ListItemClickListener, LoaderManager.LoaderCallbacks<String> {
-
+public class AddBeerActivity extends AppCompatActivity implements AddBeerAdapter.ListItemClickListener, LoaderManager.LoaderCallbacks<String> {
     private final static String TAG = AddBeerActivity.class.getSimpleName();
-    private EditText mSearchBoxEditText;
+
+    private EditText mNameEditText;
+    private EditText mQuantityEditText;
     private TextView mErrorMessageDisplay;
     private Button mSearchButton;
-    private BeerAdapter mAdapter;
+    private AddBeerAdapter mAdapter;
     private RecyclerView mBeersList;
     private Cursor mCursor;
     private ProgressBar mLoadingIndicator;
+    private SQLiteDatabase mDb;
 
     private static final int BREWERYDB_SEARCH_LOADER = 27;
-    private static final String SEARCH_QUERY_URL_EXTRA = "query";
+    private static final String SEARCH_ITEM_EXTRA = "query";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_beer);
-        mSearchBoxEditText = (EditText) findViewById(R.id.et_search_box);
+        mNameEditText = (EditText) findViewById(R.id.et_beer_name);
+        mQuantityEditText = (EditText) findViewById(R.id.et_beer_quantity);
         mErrorMessageDisplay = (TextView) findViewById(R.id.tv_error_message_display);
         mSearchButton = (Button) findViewById(R.id.make_url);
         mLoadingIndicator = (ProgressBar) findViewById(R.id.pb_loading_indicator);
-
         mLoadingIndicator.setVisibility(View.INVISIBLE);
+
+        BeerListDBHelper dbHelper = new BeerListDBHelper(this);
+        mDb = dbHelper.getWritableDatabase();
 
         mSearchButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -61,8 +71,8 @@ public class AddBeerActivity extends AppCompatActivity implements BeerAdapter.Li
         });
 
         if (savedInstanceState != null) {
-            String searchItem = savedInstanceState.getString(SEARCH_QUERY_URL_EXTRA);
-            mSearchBoxEditText.setText(searchItem);
+            String searchItem = savedInstanceState.getString(SEARCH_ITEM_EXTRA);
+            mNameEditText.setText(searchItem);
             makeBreweryDBSearchQuery();
         }
 
@@ -133,16 +143,16 @@ public class AddBeerActivity extends AppCompatActivity implements BeerAdapter.Li
 
     private void makeBreweryDBSearchQuery() {
 
-        String breweryDBSearchQuery = mSearchBoxEditText.getText().toString();
+        String breweryDBSearchQuery = mNameEditText.getText().toString();
         if (TextUtils.isEmpty(breweryDBSearchQuery)) {
-            mSearchBoxEditText.setHint(R.string.nothing_entered);
+            mNameEditText.setHint(R.string.nothing_entered);
             return;
         }
 
         URL breweryDBSearchURL = NetworkUtils.buildUrl(breweryDBSearchQuery);
 
         Bundle queryBundle = new Bundle();
-        queryBundle.putString(SEARCH_QUERY_URL_EXTRA, breweryDBSearchURL.toString());
+        queryBundle.putString(SEARCH_ITEM_EXTRA, breweryDBSearchURL.toString());
 
         LoaderManager loaderManager = getSupportLoaderManager();
         Loader<String> breweryDBSearchLoader = loaderManager.getLoader(BREWERYDB_SEARCH_LOADER);
@@ -155,19 +165,20 @@ public class AddBeerActivity extends AppCompatActivity implements BeerAdapter.Li
 
     @Override
     public void onListItemClick(int position) {
-        Intent intent = new Intent(AddBeerActivity.this, DetailActivity.class);
         mCursor.moveToPosition(position);
         String name = mCursor.getString(mCursor.getColumnIndex("name"));
-        intent.putExtra("name", name);
-        String abv = mCursor.getString(mCursor.getColumnIndex("abv"));
-        intent.putExtra("abv", abv);
-        if(mCursor.getColumnIndex("description") != -1){
-            String description = mCursor.getString(mCursor.getColumnIndex("description"));
-            intent.putExtra("description", description);
+        Double abv = Double.parseDouble(mCursor.getString(mCursor.getColumnIndex("abv")));
+        String description;
+        if(mCursor.getColumnIndex("description") != -1) {
+            description = mCursor.getString(mCursor.getColumnIndex("description"));
         } else{
-            intent.putExtra("description", R.string.no_description);
+            description = "No description available";
         }
-        startActivity(intent);
+
+        int quantity = Integer.parseInt(mQuantityEditText.getText().toString());
+
+        addNewBeer(name, quantity, abv, description);
+        finish();
     }
 
     @Override
@@ -193,7 +204,7 @@ public class AddBeerActivity extends AppCompatActivity implements BeerAdapter.Li
 
             @Override
             public String loadInBackground() {
-                String searchQueryUrlString = args.getString(SEARCH_QUERY_URL_EXTRA);
+                String searchQueryUrlString = args.getString(SEARCH_ITEM_EXTRA);
 
                 if (searchQueryUrlString == null || TextUtils.isEmpty(searchQueryUrlString)) {
                     return null;
@@ -230,7 +241,7 @@ public class AddBeerActivity extends AppCompatActivity implements BeerAdapter.Li
             mBeersList.setHasFixedSize(true);
 
             mCursor = getJSONCursor(data);
-            mAdapter = new BeerAdapter(this, mCursor, this);
+            mAdapter = new AddBeerAdapter(this, mCursor, this);
             mBeersList.setAdapter(mAdapter);
 
             showBeerDataView();
@@ -257,8 +268,19 @@ public class AddBeerActivity extends AppCompatActivity implements BeerAdapter.Li
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         logAndAppend("onSaveInstanceState");
-        String searchItem = mSearchBoxEditText.getText().toString();
-        outState.putString(SEARCH_QUERY_URL_EXTRA, searchItem);
+        String searchItem = mNameEditText.getText().toString();
+        outState.putString(SEARCH_ITEM_EXTRA, searchItem);
+    }
+
+    private long addNewBeer(String name, int quantity, double abv, String description) {
+        long timestamp = System.currentTimeMillis();
+        ContentValues cv = new ContentValues();
+        cv.put(BeerListContract.BeerListEntry.COLUMN_BEER_NAME, name);
+        cv.put(BeerListContract.BeerListEntry.COLUMN_QUANTITY_IN_CL, quantity);
+        cv.put(BeerListContract.BeerListEntry.COLUMN_ABV, abv);
+        cv.put(BeerListContract.BeerListEntry.COLUMN_DESCRIPTION, description);
+        cv.put(BeerListContract.BeerListEntry.COLUMN_TIMESTAMP, timestamp);
+        return mDb.insert(BeerListContract.BeerListEntry.TABLE_NAME, null, cv);
     }
 
     private void showBeerDataView() {

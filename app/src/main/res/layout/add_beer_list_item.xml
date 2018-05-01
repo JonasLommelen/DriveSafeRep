@@ -9,16 +9,9 @@
         style="@style/TextAppearance.AppCompat.Title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:textSize="20sp"
         android:fontFamily="monospace"
         />
-    <TextView
-        android:id="@+id/tv_item_volume"
-        style="@style/TextAppearance.AppCompat.Title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical|end"
-        android:fontFamily="monospace"
-        android:textColor="#000" />
 
 </FrameLayout>

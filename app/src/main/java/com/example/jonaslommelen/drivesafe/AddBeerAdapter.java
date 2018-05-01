@@ -3,21 +3,19 @@ package com.example.jonaslommelen.drivesafe;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
-public class BeerAdapter extends RecyclerView.Adapter<BeerAdapter.BeerViewHolder> {
-    private static final String TAG = BeerAdapter.class.getSimpleName();
+public class AddBeerAdapter extends RecyclerView.Adapter<AddBeerAdapter.BeerViewHolder> {
+    private static final String TAG = AddBeerAdapter.class.getSimpleName();
 
     private Context mContext;
     private Cursor mCursor;
     private ListItemClickListener mListItemClickListener;
 
-    public BeerAdapter(Context context, Cursor cursor, ListItemClickListener listener) {
+    public AddBeerAdapter(Context context, Cursor cursor, ListItemClickListener listener) {
         mContext = context;
         mCursor = cursor;
         mListItemClickListener = listener;
@@ -29,7 +27,7 @@ public class BeerAdapter extends RecyclerView.Adapter<BeerAdapter.BeerViewHolder
 
     @Override
     public BeerViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-        int layoutIdForListItem = R.layout.beer_list_item;
+        int layoutIdForListItem = R.layout.add_beer_list_item;
         LayoutInflater inflater = LayoutInflater.from(mContext);
         View view = inflater.inflate(layoutIdForListItem, viewGroup, false);
         return new BeerViewHolder(view);

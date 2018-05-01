@@ -2,16 +2,27 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <ListPreference
+        android:title="@string/pref_units_label"
+        android:key="@string/pref_units_key"
         android:defaultValue="@string/pref_units_abv"
         android:entries="@array/pref_units_options"
-        android:entryValues="@array/pref_units_values"
-        android:key="@string/pref_units_key"
-        android:title="@string/pref_units_label" />
+        android:entryValues="@array/pref_units_values" />
+
     <ListPreference
-        android:defaultValue="@string/pref_language_english"
-        android:entries="@array/pref_language_options"
-        android:entryValues="@array/pref_language_values"
-        android:key="@string/pref_language_key"
-        android:title="@string/pref_language_label" />
+        android:title="@string/pref_gender_label"
+        android:key="@string/pref_gender_key"
+        android:defaultValue="@string/pref_gender_default"
+        android:entries="@array/pref_gender_options"
+        android:entryValues="@array/pref_gender_values"/>
+
+    <EditTextPreference
+        android:title="@string/pref_weight_label"
+        android:defaultValue="@string/pref_weight_default"
+        android:key="@string/pref_weight_key"/>
+
+    <EditTextPreference
+        android:title="@string/pref_height_label"
+        android:defaultValue="@string/pref_height_default"
+        android:key="@string/pref_height_key"/>
 
 </PreferenceScreen>

@@ -4,9 +4,11 @@
     <string name="no_results_message">No results. Please try again.</string>
     <string name="nothing_entered">No beer entered, nothing to search for.</string>
     <string name="no_description">No description available</string>
-    <string name="et_hint">Name of your beer</string>
+    <string name="hint_name_of_beer">Name of your beer</string>
     <string name="add_beer">Add Beer</string>
+    <string name="add">ADD</string>
     <string name="search">Search</string>
+    <string name="description_quantity_et">Volume in cl</string>
     <string name="title_settings_activity">Settings</string>
     <string name="title_add_beer_activity">Add beer</string>
     <string name="title_detail_activity">Detail</string>
@@ -15,20 +17,29 @@
     <string name="bdb_description_key" translatable="false">description</string>
 
     <!-- Strings related to Preferences -->
-    <string name="pref_language_label">Language</string>
-    <string name="pref_language_english" translatable="false">english</string>
-    <string name="pref_language_label_english">English</string>
-    <string name="pref_language_dutch" translatable="false">nederlands</string>
-    <string name="pref_language_label_dutch">Nederlands</string>
-    <string name="pref_language_key" translatable="false">language</string>
+    <string name="pref_weight_label">Weight In Kilogram</string>
+    <string name="pref_weight_default">74</string>
+    <string name="pref_weight_key">weight</string>
+
+    <string name="pref_height_label">Height In Centimeter</string>
+    <string name="pref_height_default">185</string>
+    <string name="pref_height_key">height</string>
 
     <string name="pref_units_label">Alcohol Percentage Units</string>
-    <string name="pref_units_default" translatable="false">abv</string>
-    <string name="pref_units_abv" translatable="false">abv</string>
-    <string name="pref_units_label_abv" translatable="false">ABV</string>
-    <string name="pref_units_percentage" translatable="false">percentage</string>
-    <string name="pref_units_label_percentage" translatable="false">percentage</string>
-    <string name="pref_units_key" translatable="false">units</string>
+    <string name="pref_units_default">abv</string>
+    <string name="pref_units_abv">abv</string>
+    <string name="pref_units_label_abv">ABV</string>
+    <string name="pref_units_percentage">percentage</string>
+    <string name="pref_units_label_percentage">Percentage</string>
+    <string name="pref_units_key">units</string>
+
+    <string name="pref_gender_label">Gender</string>
+    <string name="pref_gender_default">male</string>
+    <string name="pref_gender_male">male</string>
+    <string name="pref_gender_label_male">Male</string>
+    <string name="pref_gender_female">female</string>
+    <string name="pref_gender_label_female">Female</string>
+    <string name="pref_gender_key">gender</string>
 
     <!-- Example General settings -->
     <string name="pref_header_general">General</string>

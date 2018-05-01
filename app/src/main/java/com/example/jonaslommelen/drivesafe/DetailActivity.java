@@ -20,6 +20,10 @@ public class DetailActivity extends AppCompatActivity implements SharedPreferenc
     private TextView mAbvDisplay;
     private TextView mDescriptionDisplay;
 
+    private String NAME_KEY = "name";
+    private String ABV_KEY = "abv";
+    private String DESCRIPTION_KEY = "description";
+
     private boolean SHARED_PREFERENCES_HAVE_BEEN_CHANGED = false;
 
 
@@ -39,31 +43,28 @@ public class DetailActivity extends AppCompatActivity implements SharedPreferenc
         Intent intentThatStartedThisActivity = getIntent();
 
         if (intentThatStartedThisActivity != null) {
-            if (intentThatStartedThisActivity.hasExtra("name")) {
-                mName = intentThatStartedThisActivity.getStringExtra("name");
+            if (intentThatStartedThisActivity.hasExtra(NAME_KEY)) {
+                mName = intentThatStartedThisActivity.getStringExtra(NAME_KEY);
                 mNameDisplay.setText(mName);
             }
-            if (intentThatStartedThisActivity.hasExtra("abv")) {
-                mAbv = prefs.getString(getString(R.string.pref_units_key), getString(R.string.pref_units_default)) + ": " + intentThatStartedThisActivity.getStringExtra("abv");
-                mAbvDisplay.setText(mAbv);
+            if (intentThatStartedThisActivity.hasExtra(ABV_KEY)) {
+                mAbv = intentThatStartedThisActivity.getStringExtra("abv");
+                mAbvDisplay.setText(prefs.getString(getString(R.string.pref_units_key), getString(R.string.pref_units_default)) + ": " + mAbv);
             }
-            if (intentThatStartedThisActivity.hasExtra("description")) {
-                mDescription = intentThatStartedThisActivity.getStringExtra("description");
+            if (intentThatStartedThisActivity.hasExtra(DESCRIPTION_KEY)) {
+                mDescription = intentThatStartedThisActivity.getStringExtra(DESCRIPTION_KEY);
                 mDescriptionDisplay.setText(mDescription);
             }
         }
 
-
         if (savedInstanceState != null) {
-            String name = savedInstanceState.getString("name");
-            String abv = savedInstanceState.getString("abv");
-            String description = savedInstanceState.getString("description");
-            mNameDisplay.setText(name);
-            mAbvDisplay.setText(abv);
-            mDescriptionDisplay.setText(description);
+            mName = savedInstanceState.getString(NAME_KEY);
+            mAbv = savedInstanceState.getString(ABV_KEY);
+            mDescription = savedInstanceState.getString(DESCRIPTION_KEY);
+            mNameDisplay.setText(mName);
+            mAbvDisplay.setText(mAbv);
+            mDescriptionDisplay.setText(mDescription);
         }
-
-
     }
 
     @Override
@@ -78,8 +79,7 @@ public class DetailActivity extends AppCompatActivity implements SharedPreferenc
         if (SHARED_PREFERENCES_HAVE_BEEN_CHANGED) {
             Log.d(TAG, "onStart: preferences were updated");
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-            mAbv = prefs.getString(getString(R.string.pref_units_key), getString(R.string.pref_units_default)) + ": " + 100;
-            mAbvDisplay.setText(mAbv);
+            mAbvDisplay.setText(prefs.getString(getString(R.string.pref_units_key), getString(R.string.pref_units_default)) + ": " + mAbv);
             SHARED_PREFERENCES_HAVE_BEEN_CHANGED = false;
         }
     }
@@ -87,21 +87,46 @@ public class DetailActivity extends AppCompatActivity implements SharedPreferenc
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        logAndAppend("onDestroy");
         PreferenceManager.getDefaultSharedPreferences(this)
                 .unregisterOnSharedPreferenceChangeListener(this);
     }
 
-    //TODO detail verdwijnt na aanpassen settings
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        //logAndAppend("onSaveInstanceState");
-        String name = mNameDisplay.getText().toString();
-        String abv = mAbvDisplay.getText().toString();
-        String description = mDescriptionDisplay.getText().toString();
-        outState.putString("name", name);
-        outState.putString("name", abv);
-        outState.putString("name", description);
+        logAndAppend("onSaveInstanceState");
+        outState.putString(NAME_KEY, mName);
+        outState.putString(ABV_KEY, mAbv);
+        outState.putString(DESCRIPTION_KEY, mDescription);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        logAndAppend("onResume");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        logAndAppend("onPause");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        logAndAppend("onStop");
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        logAndAppend("onRestart");
+    }
+
+    private void logAndAppend(String lifecycleEvent) {
+        Log.d(TAG, "Lifecycle Event: " + lifecycleEvent);
     }
 
     @Override
@@ -111,9 +136,9 @@ public class DetailActivity extends AppCompatActivity implements SharedPreferenc
         if (id == R.id.action_settings) {
             Intent startSettingsActivity = new Intent(this, SettingsActivity.class);
             startActivity(startSettingsActivity);
+            Log.i(TAG, "action settings was selected");
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
