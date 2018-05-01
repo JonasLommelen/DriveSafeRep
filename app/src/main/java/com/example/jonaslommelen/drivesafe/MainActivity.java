@@ -84,10 +84,6 @@ public class MainActivity extends AppCompatActivity implements MainBeerAdapter.L
         mHoursUntilSafe = 5.3;
         calculateBloodAlcohol();
         calculateHoursUntilDrivingSafe();
-        String bloodAlcoholString = "BAC: "+mBloodAlcohol;
-        String hoursUntilSafeString = "Hours until you can drive again: "+mHoursUntilSafe;
-        mBloodAlcoholTV.setText(bloodAlcoholString);
-        mHoursUntilSafeTV.setText(hoursUntilSafeString);
 
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
 
@@ -101,6 +97,8 @@ public class MainActivity extends AppCompatActivity implements MainBeerAdapter.L
                 long id = (long) viewHolder.itemView.getTag();
                 removeBeer(id);
                 updateRecyclerView();
+                calculateBloodAlcohol();
+                calculateHoursUntilDrivingSafe();
             }
 
         }).attachToRecyclerView(mBeersList);
@@ -162,6 +160,13 @@ public class MainActivity extends AppCompatActivity implements MainBeerAdapter.L
         double totalStandardGlasses = 0;
         long hoursSinceFirstDrink = 10;
 
+        if(cursor.getCount() == 0){
+            mBloodAlcohol = 0;
+            String bloodAlcoholString = "BAC: "+mBloodAlcohol;
+            mBloodAlcoholTV.setText(bloodAlcoholString);
+            return;
+        }
+
         for (int i = 0; i < cursor.getCount(); i++) {
             double standardGlasses = 0;
             cursor.moveToPosition(i);
@@ -191,6 +196,8 @@ public class MainActivity extends AppCompatActivity implements MainBeerAdapter.L
         double BAC = (totalStandardGlasses*10)/(mWeight*multiplier) - (hoursSinceFirstDrink - 0.5) * (mWeight * 0.002);
         mBloodAlcohol = (double) Math.round(BAC * 100)/100;
 
+        String bloodAlcoholString = "BAC: "+mBloodAlcohol;
+        mBloodAlcoholTV.setText(bloodAlcoholString);
     }
 
     private void calculateHoursUntilDrivingSafe(){
@@ -198,6 +205,8 @@ public class MainActivity extends AppCompatActivity implements MainBeerAdapter.L
         double HUS = mBloodAlcohol/mWeight/0.002;
         Log.d(TAG, "calculateHoursUntilDrivingSafe: HUS: " + HUS);
         mHoursUntilSafe = Math.round(HUS*NDP)/NDP;
+        String hoursUntilSafeString = "Hours until you can drive again: "+mHoursUntilSafe;
+        mHoursUntilSafeTV.setText(hoursUntilSafeString);
     }
 
     private Cursor getAllBeers() {
@@ -230,8 +239,11 @@ public class MainActivity extends AppCompatActivity implements MainBeerAdapter.L
             Log.i(TAG, "onStart: preferences were updated");
             mWeight = Integer.parseInt(DriveSafePreferences.getWeight(this));
             mHeight = Integer.parseInt(DriveSafePreferences.getHeight(this));
+            mIsMale = DriveSafePreferences.isMale(this);
             SHARED_PREFERENCES_HAVE_BEEN_CHANGED = false;
         }
+        calculateBloodAlcohol();
+        calculateHoursUntilDrivingSafe();
     }
 
     @Override
